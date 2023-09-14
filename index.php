@@ -5,7 +5,6 @@
     session_start();
     session_unset();
     session_destroy();
-    
     header('Location:./index.php');
     die();
   }
@@ -24,9 +23,14 @@ $music_info;
   $get_song_sql = "SELECT * FROM music WHERE id = $id";
   $res_get_song = mysqli_query($conn,$get_song_sql);
   $music_info = mysqli_fetch_assoc($res_get_song);
-  //header('Location:./index.php?id='.$id);
-  //print_r($music_info);
  }
+
+ $email_val = $_SESSION['session_id'];
+ $sql_user = "SELECT id,name,email,profileimg_path FROM users WHERE email = '$email_val'";
+ $sql_res = mysqli_query($conn,$sql_user);
+ $response = mysqli_fetch_assoc($sql_res);
+// print_r($response);
+
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +41,11 @@ $music_info;
     <title>Audio Mac with PHP&MySQL</title>
     <link rel="stylesheet" href="./styles.css"/>
     <style>
-
+      .profile{
+        width:30px;
+        height: 30px;
+        cursor: pointer;
+      }
       .controls{
         display: flex;
         justify-content: center;
@@ -81,31 +89,40 @@ $music_info;
           margin-left: 10px;
           margin-top: 0px;
         }
+        .musicBox{
+          margin: 20px 0;
+        }
         .musicBox .music_logo{
           width:40px;
           height: 40px;
         }
         .music-display{
-          max-height: 400px;
-          width: 100%;
-          flex-direction: column;
-          flex-flow: column wrap;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          overflow: scroll;
+          width: 99%;
+          height: 70vh;
+          max-height: 70vh;
+          overflow-y: scroll;
+          display:grid;
+          grid-template-columns: repeat(4,250px);
           margin-top: 10px;
         }
         .music-card{
-          width: 30.3%;
-          margin: 0 10px;
+          width: 15%;
+          padding: 15px;
+          margin: 0 30px;
           text-align: left;
           cursor: pointer;
+          grid-area: span 10;
         }
         .music-card img{
-          width:200px;
-          height:150px;
+          width:220px;
+          height:170px;
           border-radius: 10px;
           object-fit: cover;
+          transition: 1s;
+        }
+        .music-card:hover img{
+          transform: scale(1.05);
         }
         .music-card form button{
           background: transparent;
@@ -113,6 +130,9 @@ $music_info;
           outline: none;
           padding: 10px 0px;
           width: 50px;
+        }
+        .music-card form p{
+          width: 100%;
         }
         .music-card form button img{
           width:20px;
@@ -125,6 +145,40 @@ $music_info;
           justify-content: space-between;
           align-items: center;
           width:200px;
+        }
+        .profile-box {
+          background-color: #fff3f3;
+          padding: 10px 12px;
+          border-radius: 10px;
+        }
+        .profile-box .top-section{
+          display: flex;
+          justify-content: left;
+          align-items: center;
+        }
+        .profile-box img{
+          width:80px;
+          height: 80px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        .profile-box .info{
+          margin: 0 10px;
+          text-align: left;
+          color: #000;
+        }
+        .profile-box button{
+          background-color: rgb(7, 49, 139);
+          padding: 6px 20px;
+          color: #efefef;
+          cursor: pointer;
+          border-radius: 7px;
+          outline: none;
+          border: none;
+          margin: 5px 0;
+        }
+        .profile-box input{
+          margin: 10px 0;
         }
     </style>
 </head>
@@ -139,12 +193,12 @@ $music_info;
             <li>Artists</li>
         </div>
         <div class="right_header">
+        <img src="./Images/profile.png" class="profile"/>
         <?php if(isset($_SESSION['session_id'])):?>
             <form action="./index.php" method="POST">
               <button type="submit" name="submit-logout">LOGOUT</button>
             </form>
             <?php endif ?>
-            <button>PROFILE</button>
         </div>
     </div>
      <div class="music_container">
@@ -154,13 +208,10 @@ $music_info;
                    <li><a href="">Home</a></li>
                    <li><a href="">Artist</a></li>
                    <li><a href="">Releases</a></li>
-                   <li><a href="">Events</a></li>
-                   <li><a href="">Podcasts</a></li>
-                   <li><a href="">Store</a></li>
-                   <li><a href="">News</a></li>
                    <div class="musicBox">
                       <img src="./Images/music.jpg" class="music_logo"/>
-                      <p>The ChainSmokers.<small>Audio.mac</small></p>
+                      <p> <?php echo $music_info['music_description'] ?><small>Audio.mac</small></p>
+                      <small><?php echo $music_info['music_name']?></small>
                       <div class="controls">
                         <img src="./Images/prev.png"/>  
                         <img src="./Images/play_btn.png" class="playBtn" onclick="playAudio()"/>  
@@ -170,6 +221,19 @@ $music_info;
                         <source src="<?php echo $music_info['music_path'] ?>" type="audio/mp3"/>
                       </audio>
                    </div>
+                    <div class="profile-box">
+                     <div class="top-section">
+                        <img src="<?php echo $response['profileimg_path'] ?>"/>
+                        <div class="info">
+                          <h4><?php  echo $response['name']?></h4>
+                          <p><?php echo $response['email']?></p>
+                        </div>
+                     </div>
+                     <form action="./index.php" method="POST" enctype="multipart/form-data">
+                       <input type="file" name="file"/>
+                       <button type="submit" name="submit-profile">Change Profile</button>
+                     </form>
+                   </div> 
                 </div>
                 <div class="right">
                   <div class="top_music_banner">
