@@ -11,8 +11,8 @@ $title =$description = '';
     $audio_file = $_FILES['audio-file'];
     $image_file = $_FILES['image-file'];
 
-    print_r($audio_file);
-    print_r($image_file);
+    //print_r($audio_file);
+    //print_r($image_file);
     //image details
     $fileName = $image_file['name'];
     $fileType = $image_file['type'];

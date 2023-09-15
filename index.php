@@ -1,6 +1,6 @@
 <?php
-  include './audio_mac.db.inc.php';
   session_start();
+  include './audio_mac.db.inc.php';
   if(isset($_POST['submit-logout'])){
     session_start();
     session_unset();
@@ -9,7 +9,7 @@
     die();
   }
 
-  $sql = 'SELECT * FROM music';
+  $sql = "SELECT * FROM music";
   $res = mysqli_query($conn,$sql);
 
   $music_data = mysqli_fetch_all($res,MYSQLI_ASSOC);
@@ -41,6 +41,20 @@ $music_info;
     <title>Audio Mac with PHP&MySQL</title>
     <link rel="stylesheet" href="./styles.css"/>
     <style>
+      .right_header button{
+        background-color:transparent;
+        border: none;
+        outline: none;
+      }
+      .right_header img{
+        width:20px;
+        height: 20px;
+      }
+      select{
+        border: none;
+        outline: none;
+        padding: 10px 20px;
+      }
       .profile{
         width:30px;
         height: 30px;
@@ -59,13 +73,18 @@ $music_info;
             margin: 0 10px;
         }
         .form{
-          height: 40px;
-            width:400px;
+            height: 40px;
+            width:200px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: #efefef;
             border-radius: 10px;
+        }
+        .input-section{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
        .form input{
             height: 40px;
@@ -83,14 +102,44 @@ $music_info;
           padding: 10px;
         }
         .search_img{
-          width:20px;
-          height: 20px;
+          width:15px;
+          height: 15px;
           cursor: pointer;
           margin-left: 10px;
           margin-top: 0px;
         }
         .musicBox{
           margin: 20px 0;
+        }
+        .music_container{
+          height: 100vh;
+        }
+        .music_box .left{
+          height: 100vh;
+          max-height: 100vh;
+          overflow-y: scroll;
+          flex-basis: 25%;
+        }
+        .music_box .left li{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 20px;
+          cursor: pointer;
+        }
+        .music_box .left li img{
+          width:20px;
+          height:20px;
+          object-fit: cover;
+        }
+        .left li a{
+          flex-basis: 90%;
+        }
+        .music-card .left::-webkit-scrollbar{
+          width: 0;
+        }
+        .left::-webkit-scrollbar-track{
+          width: 0;
         }
         .musicBox .music_logo{
           width:40px;
@@ -110,9 +159,8 @@ $music_info;
           width: 15%;
           padding: 15px;
           margin: 0 30px;
-          text-align: left;
           cursor: pointer;
-          grid-area: span 10;
+          grid-column: span ;
         }
         .music-card img{
           width:220px;
@@ -180,12 +228,31 @@ $music_info;
         .profile-box input{
           margin: 10px 0;
         }
+        .add-button a{
+          background: transparent;
+          color: #000;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: 2px solid #000;
+          padding: 5px 10px;
+          border-radius: 5px;
+          cursor: pointer;
+          text-decoration: none;
+          color: #000;
+        }
+        .add-button a img{
+          width:20px;
+          height: 20px;
+        }
+        
     </style>
 </head>
 <body>
     <section class="container">
-    <div class="header">
+       <div class="header">
         <div class="left_header">
+            <img style="width: 40px; height:40px;" src="./Images/logo.png"/>
             <h2>AUDIOMAC</h2>
             <span></span>
             <li>Songs</li>
@@ -196,18 +263,21 @@ $music_info;
         <img src="./Images/profile.png" class="profile"/>
         <?php if(isset($_SESSION['session_id'])):?>
             <form action="./index.php" method="POST">
-              <button type="submit" name="submit-logout">LOGOUT</button>
+              <button type="submit" name="submit-logout"><img src="./Images/logout.png"/></button>
             </form>
             <?php endif ?>
         </div>
-    </div>
+        </div>
      <div class="music_container">
         <?php if(isset($_SESSION['session_id'])):?>
               <div class="music_box">
                 <div class="left">
-                   <li><a href="">Home</a></li>
-                   <li><a href="">Artist</a></li>
-                   <li><a href="">Releases</a></li>
+                   <li><img src="./Images/home.png"/><a href="">Home</a></li>
+                   <li><img src="./Images/artists.png"/><a href="">Artist</a></li>
+                   <li><img src="./Images/events.png"/><a href="">Events</a></li>
+                   <li><img src="./Images/podcasts.png"/><a href="">Podcasts</a></li>
+                   <li><img src="./Images/cart.png"/><a href="">Store</a></li>
+                   <li><img src="./Images/news.png"/><a href="">News</a></li>
                    <div class="musicBox">
                       <img src="./Images/music.jpg" class="music_logo"/>
                       <p> <?php echo $music_info['music_description'] ?><small>Audio.mac</small></p>
@@ -226,10 +296,10 @@ $music_info;
                         <img src="<?php echo $response['profileimg_path'] ?>"/>
                         <div class="info">
                           <h4><?php  echo $response['name']?></h4>
-                          <p><?php echo $response['email']?></p>
+                          <p style="font-size: 13px;"><?php echo $response['email']?></p>
                         </div>
                      </div>
-                     <form action="./index.php" method="POST" enctype="multipart/form-data">
+                     <form action="./update-profile.php" method="POST" enctype="multipart/form-data">
                        <input type="file" name="file"/>
                        <button type="submit" name="submit-profile">Change Profile</button>
                      </form>
@@ -242,8 +312,8 @@ $music_info;
                     <li><a href="">Home</a></li>
                      <li><a href="">Releases</a></li>
                     </div>
-                    <div class="add_button">
-                        <a href="./upload-song.php">Add Song</a>
+                    <div class="add-button">
+                        <a href="./upload-song.php"><img src="./Images/add-btn.png"/>Song</a>
                     </div>
                   </div>
                   <h1>Releases</h1>
@@ -253,11 +323,23 @@ $music_info;
                         <input type="text" name="search-music" placeholder="Search"/>
                         <img src="./Images/search.png" class="search_img"/>
                       </form>
+                      <select>
+                      <option>All Artists</option>
+                        <?php foreach($music_data as $data){ ?>
+                              <option><?php echo $data['artist'] ?></option>
+                          <?php }?>
+                    </select>
+                    <select>
+                      <option>All Genres</option>
+                      <?php foreach($music_data as $data){?>
+                          <option><?php echo $data['genre']?></option>
+                        <?php }?>
+                    </select>
                     </div>
                     <div class="right-section">
                       <button>Featured</button>
                       <button>Popular</button>
-                      <button>Newest</button>
+                      <button>Newest</button>  
                     </div>
                   </div>
                   </div>

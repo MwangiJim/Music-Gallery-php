@@ -66,7 +66,7 @@
                                header('Location:./index.php?userCreate=true&&profileupload==true');
                                exit();
                             }else{
-                                header('Location:./index.php?error=FileSizeExceededLimit');
+                                header('Location:./register.php?error=FileSizeExceededLimit');
                                 exit();
                             }
                         }else{
